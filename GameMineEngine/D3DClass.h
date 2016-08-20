@@ -16,7 +16,7 @@ public:
 	D3DClass(const D3DClass&);
 	~D3DClass();
 
-	bool Initialize(int, int, HWND, bool, float, float);
+	bool Initialize(int, int, bool, HWND, bool, float, float);
 	void ShutDonw();
 
 	ID3D10Device* GetDevice();
