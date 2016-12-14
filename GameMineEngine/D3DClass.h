@@ -17,7 +17,10 @@ public:
 	~D3DClass();
 
 	bool Initialize(int, int, bool, HWND, bool, float, float);
-	void ShutDonw();
+	void ShutDown();
+
+    void BeginScene(float, float, float, float);
+    void EndScene();
 
 	ID3D10Device* GetDevice();
 

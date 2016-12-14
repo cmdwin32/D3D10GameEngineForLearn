@@ -47,6 +47,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 
 	m_vsync_enabled = vsync;
 
+    // Create a DirectX graohics interface factory
     result = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
     if (FAILED(result))
     {
@@ -58,15 +59,50 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
     {
         return false;
     }
-
+    
+    // Ebynerate the orimary adapter output(monitor)
     result = adapter->EnumOutputs(0, &adapterOutput);
     if (FAILED(result))
     {
         return false;
     }
 
+    // Get the number of modes that fit the DXGI_FORMAT_R8G8B8A8_UNORM display format for the adapter output(monitor)
 	result = adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM,DXGI_ENUM_MODES_INTERLACED,&numModes,NULL);
-        
+    if (FAILED(result))
+    {
+        return false;
+    }
+
+    // Create a list to hold all the possible display modes for the monitor/video card combination
+    displayModelList = new DXGI_MODE_DESC[numModes];
+    if (!displayModelList)
+    {
+        return false;
+    }
+
+    // Now fill the display mode list structures
+    result = adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, displayModelList);
+    if (FAILED(result))
+    {
+        return false;
+    }
+
+    // now go through all the display modes and find the one that matches the screen width and height
+    // When a match is found store the numerator and denominator of the refresh rate for that monitor
+    for (i = 0; i < numModes; i++)
+    {
+        if (
+            displayModelList[i].Width == (unsigned int)screenWidth
+            &&
+            displayModelList[i].Height == (unsigned int)screenHeight
+            )
+        {
+            numerator = displayModelList[i].RefreshRate.Numerator;
+            denominator = displayModelList[i].RefreshRate.Denominator;
+        }
+    }
+
 }   
 
 
